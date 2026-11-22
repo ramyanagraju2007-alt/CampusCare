@@ -117,6 +117,43 @@ document.getElementById("contactMessage").textContent=
 "Thank you! This is a demo message.";
 }
 </script>
+function submitComplaint(){
+  const type=document.getElementById('problemType').value;
+  const place=document.getElementById('problemPlace').value.trim();
+  const description=document.getElementById('problemDescription').value.trim();
+
+  if(!type || !place || !description){
+    alert('Please fill all fields');
+    return;
+  }
+
+  const id='CC'+Date.now().toString().slice(-8);
+
+  const complaints=JSON.parse(
+    localStorage.getItem('ccComplaints')||'[]'
+  );
+
+  complaints.push({
+    id:id,
+    type:type,
+    place:place,
+    description:description,
+    status:'Pending',
+    date:new Date().toLocaleString()
+  });
+
+  localStorage.setItem('ccComplaints',JSON.stringify(complaints));
+
+  document.getElementById('complaintMessage').textContent=
+    'Complaint submitted successfully!';
+
+  document.getElementById('complaintId').textContent=id;
+
+  document.getElementById('problemType').value='';
+  document.getElementById('problemPlace').value='';
+  document.getElementById('problemDescription').value='';
+}
+  
 
 </body>
 </html>
