@@ -1,24 +1,153 @@
-function submitComplaint(){
- const type=document.getElementById('problemType').value;
- const place=document.getElementById('problemPlace').value.trim();
- const description=document.getElementById('problemDescription').value.trim();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCare</title>
 
- if(!type || !place || !description){
-  alert('Please fill all fields');
-  return;
- }
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f4f7ff;
+ color:#202b45;
+}
+header{
+ background:#263b80;
+ color:white;
+ padding:22px;
+ text-align:center;
+}
+nav{
+ background:#172554;
+ padding:12px;
+ text-align:center;
+}
+nav a{
+ color:white;
+ text-decoration:none;
+ margin:8px;
+}
+section{
+ background:white;
+ margin:18px auto;
+ padding:20px;
+ max-width:850px;
+ border-radius:12px;
+}
+h2{color:#263b80}
+input,select,textarea{
+ width:100%;
+ padding:12px;
+ margin:8px 0;
+ border:1px solid #bbb;
+ border-radius:6px;
+}
+button{
+ background:#263b80;
+ color:white;
+ border:0;
+ padding:12px 20px;
+ border-radius:6px;
+ cursor:pointer;
+}
+</style>
+</head>
 
- const id='CC'+Date.now().toString().slice(-8);
- const complaints=JSON.parse(localStorage.getItem('ccComplaints')||'[]');
+<body>
+
+<header>
+<h1>🎓 CampusCare</h1>
+<p>Campus Problem Solving System</p>
+</header>
+
+<nav>
+<a href="#home">Home</a>
+<a href="#report">Report Problem</a>
+<a href="#track">Track Complaint</a>
+</nav>
+
+<section id="home">
+<h2>Welcome to CampusCare</h2>
+<p>Report your college problems easily.</p>
+<p>We help students report campus issues.</p>
+</section>
+
+<section id="report">
+<h2>Report a Problem</h2>
+
+<form id="complaintForm">
+<label>Problem Category</label>
+<select id="problemType" required>
+<option value="">Select Category</option>
+<option>Water Supply</option>
+<option>Washroom</option>
+<option>Electricity</option>
+<option>Cleanliness</option>
+<option>Classroom</option>
+<option>Furniture</option>
+<option>Other</option>
+</select>
+
+<label>Problem Location</label>
+<input id="problemPlace" placeholder="Enter location" required>
+
+<label>Problem Description</label>
+<textarea id="problemDescription" placeholder="Describe your problem" required></textarea>
+
+<button type="submit">Submit Complaint</button>
+</form>
+
+<p id="complaintMessage"></p>
+<p id="complaintId"></p>
+</section>
+
+<section id="track">
+<h2>Track Complaint</h2>
+<input id="trackId" placeholder="Enter Complaint ID">
+<button onclick="trackComplaint()">Track</button>
+<p id="trackResult"></p>
+</section>
+
+<script>
+document.getElementById("complaintForm").addEventListener("submit",function(e){
+ e.preventDefault();
+
+ const type=document.getElementById("problemType").value;
+ const place=document.getElementById("problemPlace").value.trim();
+ const description=document.getElementById("problemDescription").value.trim();
+
+ const id="CC"+Date.now().toString().slice(-8);
+
+ const complaints=JSON.parse(localStorage.getItem("ccComplaints")||"[]");
 
  complaints.push({
-  id,type,place,description,
-  status:'Pending',
+  id:id,
+  type:type,
+  place:place,
+  description:description,
+  status:"Pending",
   date:new Date().toLocaleString()
  });
 
- localStorage.setItem('ccComplaints',JSON.stringify(complaints));
+ localStorage.setItem("ccComplaints",JSON.stringify(complaints));
 
- document.getElementById('complaintMessage').textContent='Complaint submitted successfully!';
- document.getElementById('complaintId').textContent='Complaint ID: '+id;
+ document.getElementById("complaintMessage").textContent="Complaint submitted successfully!";
+ document.getElementById("complaintId").textContent="Complaint ID: "+id;
+
+ this.reset();
+});
+
+function trackComplaint(){
+ const id=document.getElementById("trackId").value.trim();
+ const complaints=JSON.parse(localStorage.getItem("ccComplaints")||"[]");
+ const complaint=complaints.find(c=>c.id===id);
+
+ document.getElementById("trackResult").textContent=
+ complaint ? "Status: "+complaint.status+" | Problem: "+complaint.type : "Complaint not found.";
 }
+</script>
+
+</body>
+</html>
