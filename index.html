@@ -1,50 +1,24 @@
-<section id="track">
-<h2>Track Your Complaint</h2>
-<input id="trackId" placeholder="Enter Complaint ID">
-<button onclick="trackComplaint()">Check Status</button>
-<p id="trackResult"></p>
-</section>
-
-<section id="admin">
-<h2>Admin Dashboard</h2>
-<input type="password" id="password" placeholder="Admin Password">
-<button onclick="showAdmin()">Login</button>
-<div id="adminData"></div>
-</section>
-
-<script>
-function getComplaints(){
- return JSON.parse(localStorage.getItem("complaints") || "[]");
-}
-
 function submitComplaint(){
- let category=document.getElementById("category").value;
- let place=document.getElementById("place").value.trim();
- let description=document.getElementById("description").value.trim();
+ const type=document.getElementById('problemType').value;
+ const place=document.getElementById('problemPlace').value.trim();
+ const description=document.getElementById('problemDescription').value.trim();
 
- if(!category || !place || !description){
-  alert("Please fill all fields");
+ if(!type || !place || !description){
+  alert('Please fill all fields');
   return;
  }
 
- let complaints=getComplaints();
- let id="CC"+Date.now().toString().slice(-8);
+ const id='CC'+Date.now().toString().slice(-8);
+ const complaints=JSON.parse(localStorage.getItem('ccComplaints')||'[]');
 
  complaints.push({
-  id:id,
-  category:category,
-  place:place,
-  description:description,
-  status:"Pending"
+  id,type,place,description,
+  status:'Pending',
+  date:new Date().toLocaleString()
  });
 
- localStorage.setItem("complaints",JSON.stringify(complaints));
+ localStorage.setItem('ccComplaints',JSON.stringify(complaints));
 
- document.getElementById("result").textContent=
- "Complaint submitted! Your ID: "+id;
-
- document.getElementById("category").value="";
- document.getElementById("place").value="";
- document.getElementById("description").value="";
+ document.getElementById('complaintMessage').textContent='Complaint submitted successfully!';
+ document.getElementById('complaintId').textContent='Complaint ID: '+id;
 }
-
