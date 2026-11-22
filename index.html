@@ -1,3 +1,377 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCare</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7ff;color:#202b45}
+header{background:#263b80;color:white;padding:25px;text-align:center}
+nav{background:#172554;padding:12px;text-align:center}
+nav a{color:white;text-decoration:none;margin:8px;display:inline-block}
+section{background:white;margin:20px auto;padding:22px;max-width:850px;border-radius:12px}
+h2{color:#263b80}
+input,select,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #bbb;border-radius:6px}
+button{background:#263b80;color:white;border:0;padding:12px 20px;border-radius:6px;cursor:pointer;margin:5px}
+.complaint{border:1px solid #ccc;padding:15px;margin:12px 0;border-radius:8px}
+footer{background:#172554;color:white;text-align:center;padding:15px}
+.hidden{display:none}
+.message{padding:10px;margin:10px 0;background:#eef2ff;border-radius:6px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🎓 CampusCare</h1>
+<p>Campus Problem Solving System</p>
+</header>
+
+<nav>
+<a href="#home">Home</a>
+<a href="#report">Report Problem</a>
+<a href="#track">Track Complaint</a>
+<a href="#admin" id="adminLink" class="hidden">Admin</a>
+</nav>
+
+<section id="home">
+<h2>Welcome to CampusCare</h2>
+<p>Report your college problems easily.</p>
+<p>We help students report campus issues.</p>
+</section>
+
+<section id="auth">
+<h2>Student / Admin Login</h2>
+<input type="email" id="email" placeholder="Email address">
+<input type="password" id="password" placeholder="Password">
+<button onclick="registerUser()">Register</button>
+<button onclick="loginUser()">Login</button>
+<button onclick="logoutUser()" id="logoutBtn" class="hidden">Logout</button>
+<p id="authMessage" class="message">Please login or register to continue.</p>
+</section>
+
+<section id="report" class="hidden">
+<h2>Report a Problem</h2>
+<form id="complaintForm">
+<label>Problem Category</label>
+<select id="problemType" required>
+<option value="">Select Category</option>
+<option>Water Supply</option>
+<option>Washroom</option>
+<option>Electricity</option>
+<option>Cleanliness</option>
+<option>Classroom</option>
+<option>Furniture</option>
+<option>Other</option>
+</select>
+<label>Problem Location</label>
+<input id="problemPlace" placeholder="Enter location" required>
+<label>Problem Description</label>
+<textarea id="problemDescription" placeholder="Describe your problem" required></textarea>
+<button type="submit">Submit Complaint</button>
+</form>
+<p id="complaintMessage"></p>
+<p id="complaintId"></p>
+</section>
+
+<section id="track" class="hidden">
+<h2>Track Complaint</h2>
+<input id="trackId" placeholder="Enter Complaint ID">
+<button onclick="trackComplaint()">Track</button>
+<p id="trackResult"></p>
+</section>
+
+<section id="admin" class="hidden">
+<h2>Admin Dashboard</h2>
+<p>View and update student complaints.</p>
+<button onclick="showComplaints()">View Complaints</button>
+<div id="adminComplaints"></div>
+</section>
+
+<footer>
+<p>CampusCare - Campus Problem Solving System</p>
+</footer>
+
+<script type="module">
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+ getAuth,
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ collection,
+ addDoc,
+ getDocs,
+ query,
+ where,
+ doc,
+ updateDoc
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyCDZmWxs8GS_CdwuToNr9jHYjXRi4s0g7g",
+ authDomain: "campuscare-59e2b.firebaseapp.com",
+ projectId: "campuscare-59e2b",
+ storageBucket: "campuscare-59e2b.firebasestorage.app",
+ messagingSenderId: "1076067839148",
+ appId: "1:1076067839148:web:6aaf0619501b4d14684309",
+ measurementId: "G-J8VL5P4Y62"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Both Admin accounts
+const ADMIN_UIDS = [
+ "fkj4pzzGYaaPmSfW04fKLoe5kGq2",
+ "BrBu0YU0YcSSbeg5hORF3x5JDq72"
+];
+
+let currentUser = null;
+
+function showMessage(id,message){
+ document.getElementById(id).textContent = message;
+}
+
+function isAdmin(){
+ return currentUser && ADMIN_UIDS.includes(currentUser.uid);
+}
+
+window.registerUser = async function(){
+ const email = document.getElementById("email").value.trim();
+ const password = document.getElementById("password").value;
+
+ if(!email || !password){
+  showMessage("authMessage","Enter email and password.");
+  return;
+ }
+
+ try{
+  await createUserWithEmailAndPassword(auth,email,password);
+  showMessage("authMessage","Registration successful!");
+ }catch(error){
+  showMessage("authMessage",error.message);
+ }
+};
+
+window.loginUser = async function(){
+ const email = document.getElementById("email").value.trim();
+ const password = document.getElementById("password").value;
+
+ if(!email || !password){
+  showMessage("authMessage","Enter email and password.");
+  return;
+ }
+
+ try{
+  await signInWithEmailAndPassword(auth,email,password);
+  showMessage("authMessage","Login successful!");
+ }catch(error){
+  showMessage("authMessage",error.message);
+ }
+};
+
+window.logoutUser = async function(){
+ try{
+  await signOut(auth);
+  showMessage("authMessage","Logged out successfully.");
+ }catch(error){
+  showMessage("authMessage",error.message);
+ }
+};
+
+onAuthStateChanged(auth,user=>{
+ currentUser = user;
+
+ document.getElementById("report").classList.toggle("hidden",!user);
+ document.getElementById("track").classList.toggle("hidden",!user);
+ document.getElementById("logoutBtn").classList.toggle("hidden",!user);
+
+ const admin = !!user && isAdmin();
+
+ document.getElementById("admin").classList.toggle("hidden",!admin);
+ document.getElementById("adminLink").classList.toggle("hidden",!admin);
+
+ if(user){
+  showMessage(
+   "authMessage",
+   admin ? "Welcome Admin!" : "Welcome! You are logged in."
+  );
+ }else{
+  showMessage("authMessage","Please login or register to continue.");
+  document.getElementById("adminComplaints").replaceChildren();
+ }
+});
+
+document.getElementById("complaintForm").addEventListener("submit",async function(e){
+ e.preventDefault();
+
+ if(!currentUser){
+  alert("Please login first.");
+  return;
+ }
+
+ const type = document.getElementById("problemType").value;
+ const place = document.getElementById("problemPlace").value.trim();
+ const description = document.getElementById("problemDescription").value.trim();
+
+ const id = "CC" + Date.now().toString().slice(-8);
+
+ try{
+  await addDoc(collection(db,"complaints"),{
+   complaintId:id,
+   studentUid:currentUser.uid,
+   type:type,
+   place:place,
+   description:description,
+   status:"Pending",
+   date:new Date().toLocaleString()
+  });
+
+  showMessage("complaintMessage","Complaint submitted successfully!");
+  showMessage("complaintId","Your Complaint ID: "+id);
+  this.reset();
+
+ }catch(error){
+  showMessage("complaintMessage","Error: "+error.message);
+ }
+});
+
+window.trackComplaint = async function(){
+ if(!currentUser) return;
+
+ const id = document.getElementById("trackId").value.trim();
+
+ if(!id){
+  showMessage("trackResult","Enter Complaint ID.");
+  return;
+ }
+
+ try{
+  let q;
+
+  if(isAdmin()){
+   q = query(
+    collection(db,"complaints"),
+    where("complaintId","==",id)
+   );
+  }else{
+   q = query(
+    collection(db,"complaints"),
+    where("complaintId","==",id),
+    where("studentUid","==",currentUser.uid)
+   );
+  }
+
+  const result = await getDocs(q);
+
+  if(result.empty){
+   showMessage("trackResult","Complaint not found.");
+   return;
+  }
+
+  const c = result.docs[0].data();
+
+  showMessage(
+   "trackResult",
+   "Status: "+c.status+" | Problem: "+c.type
+  );
+
+ }catch(error){
+  showMessage("trackResult","Error: "+error.message);
+ }
+};
+
+window.showComplaints = async function(){
+ if(!isAdmin()){
+  alert("Admin access only.");
+  return;
+ }
+
+ const area = document.getElementById("adminComplaints");
+ area.replaceChildren();
+
+ try{
+  const result = await getDocs(collection(db,"complaints"));
+
+  if(result.empty){
+   area.textContent = "No complaints found.";
+   return;
+  }
+
+  result.forEach(item=>{
+   const c = item.data();
+   const card = document.createElement("div");
+   card.className = "complaint";
+
+   const details = document.createElement("p");
+   details.textContent =
+    "ID: "+c.complaintId+
+    " | Category: "+c.type+
+    " | Location: "+c.place+
+    " | Description: "+c.description+
+    " | Date: "+c.date;
+
+   const label = document.createElement("label");
+   label.textContent = "Update Status:";
+
+   const status = document.createElement("select");
+
+   ["Pending","In Progress","Solved"].forEach(s=>{
+    const option = document.createElement("option");
+    option.value = s;
+    option.textContent = s;
+    status.appendChild(option);
+   });
+
+   status.value = c.status;
+
+   status.addEventListener("change",async function(){
+    await updateStatus(item.id,this.value);
+   });
+
+   card.appendChild(details);
+   card.appendChild(label);
+   card.appendChild(status);
+   area.appendChild(card);
+  });
+
+ }catch(error){
+  area.textContent = "Error: "+error.message;
+ }
+};
+
+async function updateStatus(documentId,newStatus){
+ if(!isAdmin()){
+  alert("Admin access only.");
+  return;
+ }
+
+ try{
+  await updateDoc(doc(db,"complaints",documentId),{
+   status:newStatus
+  });
+
+  alert("Complaint status updated!");
+
+ }catch(error){
+  alert("Error: "+error.message);
+ }
+}
+
+</script>
+</body>
+</html> 
 
 
