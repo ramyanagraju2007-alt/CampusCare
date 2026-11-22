@@ -1,25 +1,113 @@
+<section id="track">
+<h2>Track Your Complaint</h2>
+<input id="trackId" placeholder="Enter Complaint ID">
+<button onclick="trackComplaint()">Check Status</button>
+<p id="trackResult"></p>
+</section>
+
+<section id="admin">
+<h2>Admin Dashboard</h2>
+<input type="password" id="password" placeholder="Admin Password">
+<button onclick="showAdmin()">Login</button>
+<div id="adminData"></div>
+</section>
+
+<script>
+function getComplaints(){
+ return JSON.parse(localStorage.getItem("complaints") || "[]");
+}
 
 function submitComplaint(){
-const type=document.getElementById('problemType').value;
-const place=document.getElementById('problemPlace').value.trim();
-const description=document.getElementById('problemDescription').value.trim();
+ let category=document.getElementById("category").value;
+ let place=document.getElementById("place").value.trim();
+ let description=document.getElementById("description").value.trim();
 
-if(!type || !place || !description){
-alert('Please fill all fields');
-return;
+ if(!category || !place || !description){
+  alert("Please fill all fields");
+  return;
+ }
+
+ let complaints=getComplaints();
+ let id="CC"+Date.now().toString().slice(-8);
+
+ complaints.push({
+  id:id,
+  category:category,
+  place:place,
+  description:description,
+  status:"Pending"
+ });
+
+ localStorage.setItem("complaints",JSON.stringify(complaints));
+
+ document.getElementById("result").textContent=
+ "Complaint submitted! Your ID: "+id;
+
+ document.getElementById("category").value="";
+ document.getElementById("place").value="";
+ document.getElementById("description").value="";
 }
 
-const id='CC'+Date.now().toString().slice(-8);
-const complaints=JSON.parse(localStorage.getItem('ccComplaints')||'[]');
+function trackComplaint(){
+ let id=document.getElementById("trackId").value.trim();
+ let complaints=getComplaints();
+ let complaint=complaints.find(c=>c.id===id);
 
-complaints.push({
-id,type,place,description,
-status:'Pending',
-date:new Date().toLocaleString()
-});
-
-localStorage.setItem('ccComplaints',JSON.stringify(complaints));
-
-document.getElementById('complaintMessage').textContent='Complaint submitted successfully!';
-document.getElementById('complaintId').textContent='Complaint ID: '+id;
+ if(complaint){
+  document.getElementById("trackResult").textContent=
+  "Complaint: "+complaint.id+
+  " | Status: "+complaint.status;
+ }else{
+  document.getElementById("trackResult").textContent=
+  "Complaint not found";
+ }
 }
+
+function showAdmin(){
+ let password=document.getElementById("password").value;
+
+ if(password!=="CCadmin2026"){
+  alert("Wrong password");
+  return;
+ }
+
+ let complaints=getComplaints();
+ let output=document.getElementById("adminData");
+ output.innerHTML="";
+
+ complaints.forEach((c,index)=>{
+  let div=document.createElement("div");
+  div.style.padding="12px";
+  div.style.border="1px solid #ccc";
+  div.style.margin="10px 0";
+
+  let info=document.createElement("p");
+  info.textContent=c.id+" | "+c.category+
+  " | "+c.place+" | "+c.description;
+
+  let select=document.createElement("select");
+
+  ["Pending","In Progress","Solved"].forEach(status=>{
+   let option=document.createElement("option");
+   option.value=status;
+   option.textContent=status;
+   select.appendChild(option);
+  });
+
+  select.value=c.status;
+
+  select.onchange=function(){
+   let all=getComplaints();
+   all[index].status=select.value;
+   localStorage.setItem("complaints",JSON.stringify(all));
+  };
+
+  div.appendChild(info);
+  div.appendChild(select);
+  output.appendChild(div);
+ });
+}
+</script>
+
+</body>
+</html>
