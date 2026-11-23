@@ -1,377 +1,686 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampusCare</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7ff;color:#202b45}
-header{background:#263b80;color:white;padding:25px;text-align:center}
-nav{background:#172554;padding:12px;text-align:center}
-nav a{color:white;text-decoration:none;margin:8px;display:inline-block}
-section{background:white;margin:20px auto;padding:22px;max-width:850px;border-radius:12px}
-h2{color:#263b80}
-input,select,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #bbb;border-radius:6px}
-button{background:#263b80;color:white;border:0;padding:12px 20px;border-radius:6px;cursor:pointer;margin:5px}
-.complaint{border:1px solid #ccc;padding:15px;margin:12px 0;border-radius:8px}
-footer{background:#172554;color:white;text-align:center;padding:15px}
-.hidden{display:none}
-.message{padding:10px;margin:10px 0;background:#eef2ff;border-radius:6px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#263b80">
+  <title>CampusCare</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7ff;
+      color: #202b45;
+    }
+
+    header {
+      background: #263b80;
+      color: white;
+      padding: 22px 12px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+    }
+
+    nav {
+      background: #172554;
+      padding: 12px;
+      text-align: center;
+    }
+
+    nav button {
+      background: white;
+      color: #172554;
+      border: none;
+      padding: 10px 14px;
+      margin: 4px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    h2 {
+      color: #263b80;
+      margin-top: 0;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .main-btn {
+      background: #263b80;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 5px 3px;
+    }
+
+    .main-btn:hover {
+      background: #172554;
+    }
+
+    .danger {
+      background: #b91c1c;
+    }
+
+    .success {
+      color: #15803d;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    .complaint {
+      border: 1px solid #dbe3f0;
+      border-radius: 9px;
+      padding: 15px;
+      margin: 12px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      font-weight: bold;
+      color: #263b80;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      background: #172554;
+      color: white;
+      text-align: center;
+      padding: 18px;
+      margin-top: 30px;
+    }
+  </style>
 </head>
+
 <body>
 
 <header>
-<h1>🎓 CampusCare</h1>
-<p>Campus Problem Solving System</p>
+  <h1>🎓 CampusCare</h1>
+  <p>Campus Problem Solving System</p>
 </header>
 
 <nav>
-<a href="#home">Home</a>
-<a href="#report">Report Problem</a>
-<a href="#track">Track Complaint</a>
-<a href="#admin" id="adminLink" class="hidden">Admin</a>
+  <button onclick="showSection('account')">Login</button>
+  <button onclick="showSection('report')">Report Problem</button>
+  <button onclick="showSection('track')">Track Complaint</button>
+  <button onclick="showSection('admin')">Admin Dashboard</button>
 </nav>
 
-<section id="home">
-<h2>Welcome to CampusCare</h2>
-<p>Report your college problems easily.</p>
-<p>We help students report campus issues.</p>
-</section>
+<div class="container">
 
-<section id="auth">
-<h2>Student / Admin Login</h2>
-<input type="email" id="email" placeholder="Email address">
-<input type="password" id="password" placeholder="Password">
-<button onclick="registerUser()">Register</button>
-<button onclick="loginUser()">Login</button>
-<button onclick="logoutUser()" id="logoutBtn" class="hidden">Logout</button>
-<p id="authMessage" class="message">Please login or register to continue.</p>
-</section>
+  <section id="account" class="card">
+    <h2>Student / Admin Login</h2>
 
-<section id="report" class="hidden">
-<h2>Report a Problem</h2>
-<form id="complaintForm">
-<label>Problem Category</label>
-<select id="problemType" required>
-<option value="">Select Category</option>
-<option>Water Supply</option>
-<option>Washroom</option>
-<option>Electricity</option>
-<option>Cleanliness</option>
-<option>Classroom</option>
-<option>Furniture</option>
-<option>Other</option>
-</select>
-<label>Problem Location</label>
-<input id="problemPlace" placeholder="Enter location" required>
-<label>Problem Description</label>
-<textarea id="problemDescription" placeholder="Describe your problem" required></textarea>
-<button type="submit">Submit Complaint</button>
-</form>
-<p id="complaintMessage"></p>
-<p id="complaintId"></p>
-</section>
+    <p id="loginStatus">Please login or register.</p>
 
-<section id="track" class="hidden">
-<h2>Track Complaint</h2>
-<input id="trackId" placeholder="Enter Complaint ID">
-<button onclick="trackComplaint()">Track</button>
-<p id="trackResult"></p>
-</section>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter email">
 
-<section id="admin" class="hidden">
-<h2>Admin Dashboard</h2>
-<p>View and update student complaints.</p>
-<button onclick="showComplaints()">View Complaints</button>
-<div id="adminComplaints"></div>
-</section>
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+
+    <button class="main-btn" onclick="registerUser()">Register</button>
+    <button class="main-btn" onclick="loginUser()">Login</button>
+    <button class="main-btn danger" onclick="logoutUser()">Logout</button>
+
+    <p id="authMessage"></p>
+  </section>
+
+  <section id="report" class="card hidden">
+    <h2>Report a Campus Problem</h2>
+
+    <label>Problem Category</label>
+    <select id="problemType">
+      <option value="">Select Category</option>
+      <option value="Washroom">Washroom</option>
+      <option value="Drinking Water">Drinking Water</option>
+      <option value="Classroom">Classroom</option>
+      <option value="Electricity">Electricity</option>
+      <option value="Library">Library</option>
+      <option value="Hostel">Hostel</option>
+      <option value="Cleanliness">Cleanliness</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label>Problem Location</label>
+    <input id="problemPlace" type="text"
+      placeholder="Enter problem location">
+
+    <label>Problem Description</label>
+    <textarea id="problemDescription"
+      placeholder="Describe your problem"></textarea>
+
+    <button class="main-btn" onclick="submitComplaint()">
+      Submit Complaint
+    </button>
+
+    <p id="submitMessage"></p>
+  </section>
+
+  <section id="track" class="card hidden">
+    <h2>Track Complaint</h2>
+
+    <label>Complaint ID</label>
+    <input id="trackId" type="text"
+      placeholder="Example: CC12345678">
+
+    <button class="main-btn" onclick="trackComplaint()">
+      Track
+    </button>
+
+    <div id="trackResult"></div>
+  </section>
+
+  <section id="admin" class="card hidden">
+    <h2>Admin Dashboard</h2>
+    <p>View and update student complaints.</p>
+
+    <button class="main-btn" onclick="loadComplaints()">
+      View Complaints
+    </button>
+
+    <p id="adminMessage"></p>
+    <div id="complaintList"></div>
+  </section>
+
+</div>
 
 <footer>
-<p>CampusCare - Campus Problem Solving System</p>
+  <p>CampusCare © 2026</p>
+  <p>Making Campus Better Together</p>
 </footer>
 
 <script type="module">
 
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
-import {
- getAuth,
- createUserWithEmailAndPassword,
- signInWithEmailAndPassword,
- signOut,
- onAuthStateChanged
-} from
-"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
-import {
- getFirestore,
- collection,
- addDoc,
- getDocs,
- query,
- where,
- doc,
- updateDoc
-} from
-"https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    doc,
+    updateDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-const firebaseConfig = {
- apiKey: "AIzaSyCDZmWxs8GS_CdwuToNr9jHYjXRi4s0g7g",
- authDomain: "campuscare-59e2b.firebaseapp.com",
- projectId: "campuscare-59e2b",
- storageBucket: "campuscare-59e2b.firebasestorage.app",
- messagingSenderId: "1076067839148",
- appId: "1:1076067839148:web:6aaf0619501b4d14684309",
- measurementId: "G-J8VL5P4Y62"
-};
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  // FIREBASE CONFIGURATION
 
-// Both Admin accounts
-const ADMIN_UIDS = [
- "fkj4pzzGYaaPmSfW04fKLoe5kGq2",
- "BrBu0YU0YcSSbeg5hORF3x5JDq72"
-];
+  const firebaseConfig = {
+    apiKey: "AIzaSyCDZmWxs8GS_CdwuToNr9jHYjXRi4s0g7g",
+    authDomain: "campuscare-59e2b.firebaseapp.com",
+    projectId: "campuscare-59e2b",
+    storageBucket: "campuscare-59e2b.firebasestorage.app",
+    messagingSenderId: "1076067839148",
+    appId: "1:1076067839148:web:6aaf0619501b4d14684309",
+    measurementId: "G-J8VL5P4Y62"
+  };
 
-let currentUser = null;
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-function showMessage(id,message){
- document.getElementById(id).textContent = message;
-}
 
-function isAdmin(){
- return currentUser && ADMIN_UIDS.includes(currentUser.uid);
-}
+  // ADMIN AND HOD USER IDS
 
-window.registerUser = async function(){
- const email = document.getElementById("email").value.trim();
- const password = document.getElementById("password").value;
+  const ADMIN_UIDS = [
+    "fkj4pzzGYaaPmSfW04fKLoe5kGq2",
+    "BrBu0YU0YcSSbeg5hORF3x5JDq72"
+  ];
 
- if(!email || !password){
-  showMessage("authMessage","Enter email and password.");
-  return;
- }
+  let currentUser = null;
 
- try{
-  await createUserWithEmailAndPassword(auth,email,password);
-  showMessage("authMessage","Registration successful!");
- }catch(error){
-  showMessage("authMessage",error.message);
- }
-};
-
-window.loginUser = async function(){
- const email = document.getElementById("email").value.trim();
- const password = document.getElementById("password").value;
-
- if(!email || !password){
-  showMessage("authMessage","Enter email and password.");
-  return;
- }
-
- try{
-  await signInWithEmailAndPassword(auth,email,password);
-  showMessage("authMessage","Login successful!");
- }catch(error){
-  showMessage("authMessage",error.message);
- }
-};
-
-window.logoutUser = async function(){
- try{
-  await signOut(auth);
-  showMessage("authMessage","Logged out successfully.");
- }catch(error){
-  showMessage("authMessage",error.message);
- }
-};
-
-onAuthStateChanged(auth,user=>{
- currentUser = user;
-
- document.getElementById("report").classList.toggle("hidden",!user);
- document.getElementById("track").classList.toggle("hidden",!user);
- document.getElementById("logoutBtn").classList.toggle("hidden",!user);
-
- const admin = !!user && isAdmin();
-
- document.getElementById("admin").classList.toggle("hidden",!admin);
- document.getElementById("adminLink").classList.toggle("hidden",!admin);
-
- if(user){
-  showMessage(
-   "authMessage",
-   admin ? "Welcome Admin!" : "Welcome! You are logged in."
-  );
- }else{
-  showMessage("authMessage","Please login or register to continue.");
-  document.getElementById("adminComplaints").replaceChildren();
- }
-});
-
-document.getElementById("complaintForm").addEventListener("submit",async function(e){
- e.preventDefault();
-
- if(!currentUser){
-  alert("Please login first.");
-  return;
- }
-
- const type = document.getElementById("problemType").value;
- const place = document.getElementById("problemPlace").value.trim();
- const description = document.getElementById("problemDescription").value.trim();
-
- const id = "CC" + Date.now().toString().slice(-8);
-
- try{
-  await addDoc(collection(db,"complaints"),{
-   complaintId:id,
-   studentUid:currentUser.uid,
-   type:type,
-   place:place,
-   description:description,
-   status:"Pending",
-   date:new Date().toLocaleString()
-  });
-
-  showMessage("complaintMessage","Complaint submitted successfully!");
-  showMessage("complaintId","Your Complaint ID: "+id);
-  this.reset();
-
- }catch(error){
-  showMessage("complaintMessage","Error: "+error.message);
- }
-});
-
-window.trackComplaint = async function(){
- if(!currentUser) return;
-
- const id = document.getElementById("trackId").value.trim();
-
- if(!id){
-  showMessage("trackResult","Enter Complaint ID.");
-  return;
- }
-
- try{
-  let q;
-
-  if(isAdmin()){
-   q = query(
-    collection(db,"complaints"),
-    where("complaintId","==",id)
-   );
-  }else{
-   q = query(
-    collection(db,"complaints"),
-    where("complaintId","==",id),
-    where("studentUid","==",currentUser.uid)
-   );
+  function isAdmin() {
+    return currentUser &&
+      ADMIN_UIDS.includes(currentUser.uid);
   }
 
-  const result = await getDocs(q);
 
-  if(result.empty){
-   showMessage("trackResult","Complaint not found.");
-   return;
+  // HTML SAFE TEXT
+
+  function safeText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
   }
 
-  const c = result.docs[0].data();
 
-  showMessage(
-   "trackResult",
-   "Status: "+c.status+" | Problem: "+c.type
-  );
+  // SECTION NAVIGATION
 
- }catch(error){
-  showMessage("trackResult","Error: "+error.message);
- }
-};
+  window.showSection = function(sectionId) {
+    document.querySelectorAll(".container section")
+      .forEach(section => section.classList.add("hidden"));
 
-window.showComplaints = async function(){
- if(!isAdmin()){
-  alert("Admin access only.");
-  return;
- }
+    document.getElementById(sectionId)
+      .classList.remove("hidden");
+  };
 
- const area = document.getElementById("adminComplaints");
- area.replaceChildren();
 
- try{
-  const result = await getDocs(collection(db,"complaints"));
+  // REGISTER
 
-  if(result.empty){
-   area.textContent = "No complaints found.";
-   return;
-  }
+  window.registerUser = async function() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-  result.forEach(item=>{
-   const c = item.data();
-   const card = document.createElement("div");
-   card.className = "complaint";
+    if (!email || !password) {
+      document.getElementById("authMessage").textContent =
+        "Please enter email and password.";
+      return;
+    }
 
-   const details = document.createElement("p");
-   details.textContent =
-    "ID: "+c.complaintId+
-    " | Category: "+c.type+
-    " | Location: "+c.place+
-    " | Description: "+c.description+
-    " | Date: "+c.date;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
 
-   const label = document.createElement("label");
-   label.textContent = "Update Status:";
+      document.getElementById("authMessage").textContent =
+        "Registration successful!";
 
-   const status = document.createElement("select");
+    } catch (error) {
+      document.getElementById("authMessage").textContent =
+        error.message;
+    }
+  };
 
-   ["Pending","In Progress","Solved"].forEach(s=>{
-    const option = document.createElement("option");
-    option.value = s;
-    option.textContent = s;
-    status.appendChild(option);
-   });
 
-   status.value = c.status;
+  // LOGIN
 
-   status.addEventListener("change",async function(){
-    await updateStatus(item.id,this.value);
-   });
+  window.loginUser = async function() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-   card.appendChild(details);
-   card.appendChild(label);
-   card.appendChild(status);
-   area.appendChild(card);
+    if (!email || !password) {
+      document.getElementById("authMessage").textContent =
+        "Please enter email and password.";
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      document.getElementById("authMessage").textContent =
+        "Login successful!";
+
+    } catch (error) {
+      document.getElementById("authMessage").textContent =
+        error.message;
+    }
+  };
+
+
+  // LOGOUT
+
+  window.logoutUser = async function() {
+    try {
+      await signOut(auth);
+
+      document.getElementById("authMessage").textContent =
+        "Logged out successfully.";
+
+    } catch (error) {
+      document.getElementById("authMessage").textContent =
+        error.message;
+    }
+  };
+
+
+  // LOGIN STATUS
+
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+
+    const status = document.getElementById("loginStatus");
+
+    if (user) {
+      status.textContent = isAdmin()
+        ? "Logged in as Admin / HOD"
+        : "Logged in as Student";
+    } else {
+      status.textContent = "Please login or register.";
+    }
   });
 
- }catch(error){
-  area.textContent = "Error: "+error.message;
- }
-};
 
-async function updateStatus(documentId,newStatus){
- if(!isAdmin()){
-  alert("Admin access only.");
-  return;
- }
+  // SUBMIT COMPLAINT
 
- try{
-  await updateDoc(doc(db,"complaints",documentId),{
-   status:newStatus
-  });
+  window.submitComplaint = async function() {
 
-  alert("Complaint status updated!");
+    const message = document.getElementById("submitMessage");
 
- }catch(error){
-  alert("Error: "+error.message);
- }
-}
+    if (!currentUser) {
+      message.textContent = "Please login first.";
+      message.className = "error";
+      return;
+    }
+
+    const type = document.getElementById("problemType").value;
+    const place = document.getElementById("problemPlace")
+      .value.trim();
+    const description = document.getElementById("problemDescription")
+      .value.trim();
+
+    if (!type || !place || !description) {
+      message.textContent = "Please fill all fields.";
+      message.className = "error";
+      return;
+    }
+
+    const complaintId = "CC" +
+      Date.now().toString().slice(-8);
+
+    try {
+
+      await addDoc(collection(db, "complaints"), {
+        complaintId: complaintId,
+        studentUid: currentUser.uid,
+        type: type,
+        place: place,
+        description: description,
+        status: "Pending",
+        date: serverTimestamp()
+      });
+
+      message.innerHTML =
+        "Complaint submitted successfully!<br><br>" +
+        "Your Complaint ID: <b>" +
+        safeText(complaintId) + "</b>";
+
+      message.className = "success";
+
+      document.getElementById("problemType").value = "";
+      document.getElementById("problemPlace").value = "";
+      document.getElementById("problemDescription").value = "";
+
+      document.getElementById("trackId").value = complaintId;
+
+    } catch (error) {
+      message.textContent = "Error: " + error.message;
+      message.className = "error";
+    }
+  };
+
+
+  // TRACK COMPLAINT
+
+  window.trackComplaint = async function() {
+
+    const result = document.getElementById("trackResult");
+    const id = document.getElementById("trackId")
+      .value.trim().toUpperCase();
+
+    if (!currentUser) {
+      result.textContent = "Please login first.";
+      return;
+    }
+
+    if (!id) {
+      result.textContent = "Please enter Complaint ID.";
+      return;
+    }
+
+    try {
+
+      let q;
+
+      if (isAdmin()) {
+        q = query(
+          collection(db, "complaints"),
+          where("complaintId", "==", id)
+        );
+      } else {
+        q = query(
+          collection(db, "complaints"),
+          where("complaintId", "==", id),
+          where("studentUid", "==", currentUser.uid)
+        );
+      }
+
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        result.innerHTML =
+          '<p class="error">Complaint not found. Check your Complaint ID.</p>';
+        return;
+      }
+
+      let html = "";
+
+      snapshot.forEach(item => {
+        const data = item.data();
+
+        html += `
+          <div class="complaint">
+            <p><b>Complaint ID:</b>
+              ${safeText(data.complaintId)}</p>
+
+            <p><b>Problem:</b>
+              ${safeText(data.type)}</p>
+
+            <p><b>Location:</b>
+              ${safeText(data.place)}</p>
+
+            <p><b>Description:</b>
+              ${safeText(data.description)}</p>
+
+            <p class="status">Status:
+              ${safeText(data.status)}</p>
+        `;
+
+        if (data.status === "Solved") {
+          html += `
+            <p class="success">
+              Your complaint has been successfully resolved!
+            </p>
+          `;
+        } else if (data.status === "In Progress") {
+          html += `
+            <p> Your complaint is being worked on.</p>
+          `;
+        } else {
+          html += `
+            <p>Your complaint is waiting for action.</p>
+          `;
+        }
+
+        html += `</div>`;
+      });
+
+      result.innerHTML = html;
+
+    } catch (error) {
+      result.textContent = "Error: " + error.message;
+    }
+  };
+
+
+  // ADMIN DASHBOARD
+
+  window.loadComplaints = async function() {
+
+    const list = document.getElementById("complaintList");
+    const message = document.getElementById("adminMessage");
+
+    if (!currentUser) {
+      message.textContent = "Please login first.";
+      return;
+    }
+
+    if (!isAdmin()) {
+      message.textContent =
+        "Access denied. Admin / HOD only.";
+      return;
+    }
+
+    try {
+
+      message.textContent = "Loading complaints...";
+      list.innerHTML = "";
+
+      const snapshot = await getDocs(
+        collection(db, "complaints")
+      );
+
+      if (snapshot.empty) {
+        message.textContent = "No complaints found.";
+        return;
+      }
+
+      message.textContent =
+        "Total complaints: " + snapshot.size;
+
+      snapshot.forEach(item => {
+
+        const data = item.data();
+
+        const div = document.createElement("div");
+        div.className = "complaint";
+
+        const dateText = data.date &&
+          typeof data.date.toDate === "function"
+          ? data.date.toDate().toLocaleString()
+          : "Date unavailable";
+
+        div.innerHTML = `
+          <p><b>Complaint ID:</b>
+            ${safeText(data.complaintId)}</p>
+
+          <p><b>Student UID:</b>
+            ${safeText(data.studentUid)}</p>
+
+          <p><b>Category:</b>
+            ${safeText(data.type)}</p>
+
+          <p><b>Location:</b>
+            ${safeText(data.place)}</p>
+
+          <p><b>Description:</b>
+            ${safeText(data.description)}</p>
+
+          <p><b>Date:</b>
+            ${safeText(dateText)}</p>
+
+          <p><b>Current Status:</b>
+            ${safeText(data.status)}</p>
+
+          <label>Update Status</label>
+
+          <select class="statusSelect">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Solved">Solved</option>
+          </select>
+
+          <button class="main-btn updateBtn">
+            Update Status
+          </button>
+
+          <p class="updateMessage"></p>
+        `;
+
+        const select = div.querySelector(".statusSelect");
+        const updateButton = div.querySelector(".updateBtn");
+        const updateMessage = div.querySelector(".updateMessage");
+
+        select.value = data.status || "Pending";
+
+        updateButton.addEventListener("click", async () => {
+
+          const newStatus = select.value;
+
+          try {
+
+            await updateDoc(
+              doc(db, "complaints", item.id),
+              {
+                status: newStatus
+              }
+            );
+
+            updateMessage.textContent =
+              "Status updated successfully!";
+
+            updateMessage.className = "success";
+
+            loadComplaints();
+
+          } catch (error) {
+
+            updateMessage.textContent =
+              "Error: " + error.message;
+
+            updateMessage.className = "error";
+          }
+        });
+
+        list.appendChild(div);
+      });
+
+    } catch (error) {
+
+      message.textContent =
+        "Error: " + error.message;
+    }
+  };
 
 </script>
+
 </body>
-</html> 
-
-
+</html>
